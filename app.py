@@ -10,6 +10,7 @@ df = pd.read_csv("data/appartment_descriptions_eng_with_coordinates.csv")
 
 # Preprocess House Data
 streamlit_df = df[['addr', 'rooms', 'ruler', 'floor', 'price', 'lat', 'lon', 'dominant_topic', 'topic_percentage_contrib', 'keywords']]
+streamlit_df.dominant_topic = streamlit_df.dominant_topic.apply(int)
 streamlit_df.lon = streamlit_df.lon.apply(float)
 streamlit_df.lat = streamlit_df.lat.apply(float)
 
