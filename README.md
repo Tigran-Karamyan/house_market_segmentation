@@ -9,6 +9,6 @@ Here you can find a web scrapper that retrives data from Estate.am.
 **Quickstart**: There is no need to create a new dataset or model. 
 Everything is already in repository. 
 
-- pip install -r requirements.txt 
-- streamlit run app.py
+* *pip install -r requirements.txt*
+* *streamlit run app.py*
 
