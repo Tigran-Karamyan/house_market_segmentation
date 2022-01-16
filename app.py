@@ -9,7 +9,7 @@ st.set_page_config(layout="wide")
 df = pd.read_csv("data/appartment_descriptions_eng_with_coordinates.csv")
 
 # Preprocess House Data
-streamlit_df = df[['addr', 'rooms', 'ruler', 'floor', 'price', 'lat', 'lon', 'dominant_topic', 'topic_percentage_contrib', 'keywords']]
+streamlit_df = df[['addr', 'num_rooms', 'ruler', 'num_floor', 'num_price', 'lat', 'lon', 'dominant_topic', 'topic_percentage_contrib', 'keywords']]
 streamlit_df.dominant_topic = streamlit_df.dominant_topic.apply(int)
 streamlit_df.lon = streamlit_df.lon.apply(float)
 streamlit_df.lat = streamlit_df.lat.apply(float)
@@ -19,7 +19,7 @@ st.write("Description")
 
 cluster_sidebar_selectobox_input = sorted(list(set(streamlit_df.dominant_topic.tolist())))
 st.sidebar.markdown('### Select Cluster')
-cluster_selected = [topic for topic in cluster_sidebar_selectobox_input if st.sidebar.checkbox(f"Cluster: {topic}", True)]
+cluster_selected = [topic for topic in cluster_sidebar_selectobox_input if st.sidebar.checkbox(f"Cluster: {topic + 1}", True)]
 
 # Create a Dataset for Layers Cities Location and Cities Names
 filtered_data = streamlit_df[streamlit_df.dominant_topic.isin(cluster_selected)]
@@ -39,16 +39,34 @@ try:
             radius_max_pixels=100,
             line_width_min_pixels=1,
             get_position=["lon", "lat"],
-            get_fill_color=["255 / (dominant_topic + 1) ", "(dominant_topic + 1) * 75", "255 / (dominant_topic + 1) * 2"],
+            get_fill_color=["255 / (dominant_topic + 1) ", "(dominant_topic + 1) * 42", "255 / (dominant_topic + 1) * 2"],
             get_line_color=[0, 0, 0],
-            get_radius=5
+            get_radius='topic_percentage_contrib * 10'
 
         ),
-        "House Names": pdk.Layer(
+        "Floor": pdk.Layer(
+            "TextLayer",
+            data=filtered_data,
+            get_position=["lon", "lat - 0.0001"],
+            get_text="num_floor",
+            get_color=[0, 0, 0],
+            get_size=15,
+            get_alignment_baseline="'bottom'",
+        ),
+        "Rooms": pdk.Layer(
+            "TextLayer",
+            data=filtered_data,
+            get_position=["lon", "lat  - 0.0002"],
+            get_text="num_rooms",
+            get_color=[0, 0, 0],
+            get_size=15,
+            get_alignment_baseline="'bottom'",
+        ),
+        "House Price": pdk.Layer(
             "TextLayer",
             data=filtered_data,
             get_position=["lon", "lat"],
-            get_text="price",
+            get_text="num_price",
             get_color=[0, 0, 0],
             get_size=15,
             get_alignment_baseline="'bottom'",
