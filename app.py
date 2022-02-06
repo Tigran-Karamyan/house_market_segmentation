@@ -6,23 +6,25 @@ from urllib.error import URLError
 st.set_page_config(layout="wide")
 
 # Import Csv
-df = pd.read_csv("data/appartment_descriptions_eng_with_coordinates.csv")
+df = pd.read_csv("data/prices_usd.csv")
 
 # Preprocess House Data
-streamlit_df = df[['addr', 'num_rooms', 'ruler', 'num_floor', 'num_price', 'lat', 'lon', 'dominant_topic', 'topic_percentage_contrib', 'keywords']]
+streamlit_df = df[['addr', 'num_rooms', 'ruler', 'num_floor', 'num_price',
+                   'sale_category', 'lat', 'lon', 'dominant_topic', 'topic_percentage_contrib']]
 streamlit_df.dominant_topic = streamlit_df.dominant_topic.apply(int)
 streamlit_df.lon = streamlit_df.lon.apply(float)
 streamlit_df.lat = streamlit_df.lat.apply(float)
 
-st.title("House Market Segmentation")
+st.title("Housing Market Segmentation")
 st.write("Description")
 
 cluster_sidebar_selectobox_input = sorted(list(set(streamlit_df.dominant_topic.tolist())))
-st.sidebar.markdown('### Select Cluster')
+st.sidebar.markdown('### Select Cluster and Sale Category')
 cluster_selected = [topic for topic in cluster_sidebar_selectobox_input if st.sidebar.checkbox(f"Cluster: {topic + 1}", True)]
+sale_category_selected = st.sidebar.radio("Category", set(streamlit_df.sale_category))
 
 # Create a Dataset for Layers Cities Location and Cities Names
-filtered_data = streamlit_df[streamlit_df.dominant_topic.isin(cluster_selected)]
+filtered_data = streamlit_df[(streamlit_df.dominant_topic.isin(cluster_selected)) & (streamlit_df.sale_category == sale_category_selected)]
 
 try:
     ALL_LAYERS = {
